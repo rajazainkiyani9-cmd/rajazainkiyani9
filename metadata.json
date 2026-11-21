@@ -1,0 +1,6 @@
+{
+  "name": "Aura",
+  "description": "Social photo, video, stories, reels, and messaging app",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

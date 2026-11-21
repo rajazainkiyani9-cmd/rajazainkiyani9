@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Aura</title>
+  <meta name="description" content="Share photos, Reels, Stories, and connect on Aura." />
+
+  <!-- Android / Chrome PWA -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0B0912" id="theme-color-meta" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <!-- iPhone / iPad Safari PWA (Add to Home Screen standalone mode) -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Aura" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="theme-dark">
+  <!-- Standalone Splash Screen -->
+  <div id="splash-screen" class="splash-screen" aria-hidden="true">
+    <div class="splash-inner">
+      <img src="/icons/icon-192.png" alt="Aura Logo" class="splash-logo" />
+      <h1 class="splash-title">Aura</h1>
+      <p class="splash-sub">SHARE YOUR LIGHT</p>
+    </div>
+  </div>
+
+  <!-- Auth / Sign-In & Create Account Screen -->
+  <main id="auth-screen" class="auth-screen hidden">
+    <div class="auth-card">
+      <img src="/icons/icon-192.png" alt="Aura" class="auth-logo" />
+      <h1 class="auth-brand">Aura</h1>
+      <p id="auth-subtitle" class="auth-tagline">Log in or create your Aura account — synced across Android, iPhone &amp; Web.</p>
+
+      <!-- Saved Logins (1-Tap Re-Login like Instagram) -->
+      <div id="saved-accounts-box" class="saved-accounts-box hidden"></div>
+
+      <!-- Login / Create Account Switcher -->
+      <div class="auth-mode-switch" role="tablist" aria-label="Authentication mode">
+        <button id="mode-login-btn" class="auth-mode-btn active" type="button">Log in</button>
+        <button id="mode-create-btn" class="auth-mode-btn" type="button">Create account</button>
+      </div>
+
+      <!-- Create Account extra profile fields -->
+      <div id="create-profile-fields" class="auth-form-group hidden">
+        <input id="auth-fullname" class="input-field" type="text" placeholder="Full name" maxlength="50" />
+        <input id="auth-username" class="input-field" type="text" placeholder="Username (optional, e.g. zara.creates)" maxlength="30" />
+      </div>
+
+      <!-- Method selector: Phone Number | Email -->
+      <div class="auth-channel-tabs">
+        <button id="ch-phone-btn" class="auth-ch-btn active" type="button">Phone Number</button>
+        <button id="ch-email-btn" class="auth-ch-btn" type="button">Email</button>
+      </div>
+
+      <!-- Phone Number + OTP Form -->
+      <div id="phone-auth-box" class="auth-form-group">
+        <div id="phone-step-1" class="auth-form-group">
+          <div class="phone-row">
+            <select id="auth-country-code" class="country-select" aria-label="Country code">
+              <option value="+92" selected>+92 PK</option>
+              <option value="+1">+1 US</option>
+              <option value="+44">+44 UK</option>
+              <option value="+971">+971 UAE</option>
+              <option value="+966">+966 KSA</option>
+              <option value="+91">+91 IN</option>
+              <option value="+90">+90 TR</option>
+              <option value="+61">+61 AU</option>
+              <option value="+49">+49 DE</option>
+              <option value="+93">+93 AF</option>
+              <option value="+880">+880 BD</option>
+            </select>
+            <input id="auth-phone" class="input-field" type="tel" inputmode="tel" autocomplete="tel" placeholder="300 1234567" />
+          </div>
+          <small id="phone-hint-text" class="auth-micro-hint">Enter mobile number (leading 0 is handled automatically). New numbers create an Aura ID.</small>
+          <button id="send-otp-btn" class="btn-primary" type="button">Send SMS Code</button>
+        </div>
+        <div id="phone-step-2" class="auth-form-group hidden">
+          <input id="auth-otp" class="input-field" type="number" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter 6-digit SMS code" />
+          <div style="display:flex;gap:8px">
+            <button id="change-phone-btn" class="btn-secondary" style="margin:0;flex:1" type="button">Back</button>
+            <button id="verify-otp-btn" class="btn-primary" style="flex:1.5" type="button">Verify OTP</button>
+          </div>
+          <button id="resend-otp-btn" class="link-btn" type="button">Resend SMS Code</button>
+        </div>
+        <div id="recaptcha-container"></div>
+      </div>
+
+      <!-- Email Form -->
+      <form id="email-auth-form" class="auth-form-group hidden">
+        <input id="auth-email" class="input-field" type="email" autocomplete="username" placeholder="Email address" required />
+        <input id="auth-password" class="input-field" type="password" autocomplete="current-password" placeholder="Password (min 6 characters)" required minlength="6" />
+        <button id="email-submit-btn" class="btn-primary" type="submit">Log in with Email</button>
+        <button id="forgot-pw-btn" class="link-btn" type="button">Forgot password?</button>
+      </form>
+
+      <!-- Save Login Info Toggle -->
+      <label class="save-login-row">
+        <input id="save-login-checkbox" type="checkbox" checked />
+        <span><strong>Save login info</strong> — Stay signed in, no need to re-login</span>
+      </label>
+
+      <div class="auth-divider"><span>OR CONNECT WITH</span></div>
+
+      <!-- Social / Federated Providers -->
+      <button id="google-signin-btn" class="btn-primary btn-google" type="button">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path fill="currentColor" d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z"/>
+        </svg>
+        <span id="google-btn-label">Continue with Google</span>
+      </button>
+
+      <div class="social-row">
+        <button id="facebook-signin-btn" class="btn-social btn-facebook" type="button">Facebook</button>
+        <button id="apple-signin-btn" class="btn-social btn-apple" type="button">Apple ID</button>
+      </div>
+
+      <div id="auth-info" class="info-banner hidden"></div>
+      <div id="auth-error" class="error-banner hidden"></div>
+
+      <button id="install-pwa-auth-btn" class="btn-secondary hidden" type="button">
+        Install Aura App on Chrome / Phone
+      </button>
+    </div>
+  </main>
+
+  <!-- Authenticated Mobile App Shell -->
+  <div id="app-shell" class="app-shell hidden">
+    <!-- Install Prompt Banner -->
+    <div id="install-banner" class="install-banner hidden">
+      <div class="install-banner-left">
+        <img src="/icons/icon-192.png" alt="Aura" class="install-banner-icon" />
+        <div>
+          <strong>Install Aura App</strong>
+          <small id="install-banner-hint">Full-screen experience on your home screen</small>
+        </div>
+      </div>
+      <div class="install-banner-actions">
+        <button id="install-action-btn" class="btn-pill" type="button">Install</button>
+        <button id="install-dismiss-btn" class="icon-btn" type="button" aria-label="Dismiss">&times;</button>
+      </div>
+    </div>
+
+    <!-- Main Dynamic View Area -->
+    <div id="view-container" class="view-container"></div>
+
+    <!-- Bottom Navigation Bar (Instagram 5 tabs) -->
+    <nav id="bottom-nav" class="bottom-nav" aria-label="Primary Navigation">
+      <button class="nav-item active" data-tab="home" type="button" aria-label="Home">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10.5z"/>
+        </svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-tab="explore" type="button" aria-label="Explore">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <span>Explore</span>
+      </button>
+      <button class="nav-item" data-tab="create" type="button" aria-label="Create">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+        <span>Create</span>
+      </button>
+      <button class="nav-item" data-tab="reels" type="button" aria-label="Reels">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="16" rx="3"/>
+          <path d="M3 9h18M8 4l3 5M14 4l3 5M10 12.5l5 3-5 3v-6z"/>
+        </svg>
+        <span>Reels</span>
+      </button>
+      <button class="nav-item" data-tab="profile" type="button" aria-label="Profile">
+        <span class="nav-avatar-wrap">
+          <img id="nav-profile-avatar" src="/icons/icon-192.png" alt="Profile" class="nav-avatar" />
+        </span>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Reusable Bottom Sheet / Modal Overlay -->
+  <div id="modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div id="modal-content" class="modal-sheet"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
